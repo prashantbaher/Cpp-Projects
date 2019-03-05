@@ -1,7 +1,14 @@
-#include <Windows.h>
+#include "ClearspanGUIConstants.h"
+#include "ClearspanSolidworksMethods.h"
 
 // Declaration for mainWindowProcedure
 LRESULT CALLBACK mainWindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+// Declaration for AddControl Method
+void AddControl(HWND hWnd);
+
+// Declaration for createBuildingSketch Method
+void createBuildingSketch(HWND hWnd);
 
 // Entry point for Clearspan Application
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreviousInstance, LPSTR args, int cmdShow)
@@ -24,7 +31,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreviousInstance, LPSTR args,
 	// Setting Windows Procedure for main window class
 	mainWindowClass.lpfnWndProc = mainWindowProcedure;
 
+	// Registering the class by reference
+	// If failed then return -1
+	if (!RegisterClassW(&mainWindowClass))
+		return -1;
 
+	// Creating main window for Clearspan Application
+	CreateWindowW(L"ClearspanWindowClass", L"Clearspan Application", WS_OVERLAPPEDWINDOW | WS_VISIBLE, 100, 100, 500, 500, NULL, NULL, NULL, NULL);
 
 	// Creating Message Structure
 	MSG windowMsg = { 0 };
@@ -52,6 +65,29 @@ LRESULT CALLBACK mainWindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 		// Return value 0, so that our message get stopped
 		PostQuitMessage(0);
 		break;
+	
+	// Handling Window closing case
+	case WM_CREATE:
+		// Calling AddControl method
+		AddControl(hwnd);
+		break;
+
+	// Handling Window different commands
+	case WM_COMMAND:
+
+		// Handling different parameters send by the Clearspan Application
+		switch (wParam)
+		{
+
+		// Handling case when create building sketch button is clicked
+		case CREATE_BUILDING_SKETCH:
+			// Calling createBuildingSketch method
+			createBuildingSketch(hwnd);
+			break;
+		}
+
+		break;
+
 	// Handling all other un-handle cases
 	default:
 		return DefWindowProcW(hwnd, uMsg, wParam, lParam);
